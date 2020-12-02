@@ -18,10 +18,11 @@ namespace AdventOfCode2020
         }
         private static Day CalculateDay()
         {
-            var date = 1;
+            var date = 2;
             return date switch
             {
                 1 => (Day) new Day1(),
+                2 => (Day) new Day2(),
                 _ => new Day1()
             };
         }
