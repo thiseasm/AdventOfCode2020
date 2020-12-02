@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AdventOfCode2020.Challenges
 {
@@ -12,13 +13,14 @@ namespace AdventOfCode2020.Challenges
             _inputs = ReadFileToArray("Day1.txt");
         }
 
+        [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
-            var firstResult = ExecuteFirstPart(_inputs);
-            var secondResult = ExecuteSecondPart(_inputs);
+            var firstProduct = ExecuteFirstPart(_inputs);
+            var secondProduct = ExecuteSecondPart(_inputs);
 
-            Console.WriteLine(firstResult);
-            Console.WriteLine(secondResult);
+            Console.WriteLine($"The product of the two numbers is: {firstProduct}");
+            Console.WriteLine($"The product of the three numbers is: {secondProduct}");
         }
 
         private static int ExecuteSecondPart(IReadOnlyList<int> inputs)
