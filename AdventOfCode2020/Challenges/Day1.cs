@@ -5,11 +5,17 @@ namespace AdventOfCode2020.Challenges
 {
     public class Day1 : Day
     {
+        private readonly int[] _inputs;
+
+        public Day1()
+        {
+            _inputs = ReadFileToArray("Day1.txt");
+        }
+
         public override void Start()
         {
-            var inputs = ReadFileToArray("Day1.txt");
-            var firstResult = ExecuteFirstPart(inputs);
-            var secondResult = ExecuteSecondPart(inputs);
+            var firstResult = ExecuteFirstPart(_inputs);
+            var secondResult = ExecuteSecondPart(_inputs);
 
             Console.WriteLine(firstResult);
             Console.WriteLine(secondResult);

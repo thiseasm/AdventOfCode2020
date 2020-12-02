@@ -5,7 +5,6 @@ namespace AdventOfCode2020.Challenges
 {
     public abstract class Day
     {
-        private const string InputLocation = @"..\..\..\Inputs";
         public abstract void Start();
 
         protected string[] ReadFile(string file)
@@ -23,10 +22,7 @@ namespace AdventOfCode2020.Challenges
 
         protected int[] ReadCsv(string file)
         {
-            var inputPath = Path.Combine(Properties.Resources.InputsFolder, file);
-            var inputRaw = File.ReadAllText(inputPath).Split(",");
-
-            return inputRaw.Select(input => int.Parse(input.Trim())).ToArray();
+            return ReadSv(file, ',');
         }
 
         protected int[] ReadSv(string file, char separator)
