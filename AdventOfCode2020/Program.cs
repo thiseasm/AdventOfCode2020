@@ -15,7 +15,6 @@ namespace AdventOfCode2020
             var day = CalculateDay();
             day.Start();
 
-            // ReSharper disable once LocalizableElement
             Console.ReadKey();
         }
         private static Day CalculateDay()
