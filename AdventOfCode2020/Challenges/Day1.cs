@@ -10,7 +10,7 @@ namespace AdventOfCode2020.Challenges
 
         public Day1()
         {
-            _inputs = ReadFileToArray("Day1.txt");
+            _inputs = ReadIntegerFile("Day1.txt");
         }
 
         [SuppressMessage("ReSharper", "LocalizableElement")]

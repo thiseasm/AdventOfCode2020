@@ -12,7 +12,7 @@ namespace AdventOfCode2020.Challenges
             var inputPath = Path.Combine(Properties.Resources.InputsFolder, file);
             return File.ReadAllLines(inputPath);
         }
-        protected int[] ReadFileToArray(string file)
+        protected int[] ReadIntegerFile(string file)
         {
             var inputPath = Path.Combine(Properties.Resources.InputsFolder, file);
             var inputsRaw = File.ReadAllLines(inputPath);
