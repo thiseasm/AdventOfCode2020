@@ -32,7 +32,7 @@ namespace AdventOfCode2020.Challenges
             return CalculateTreesInPath(inputs, horizontalSpeed, verticalSpeed);
         }
 
-        private static object CalculateTreesInCombinedSlopes(string[] inputs)
+        private static long CalculateTreesInCombinedSlopes(string[] inputs)
         {
             var firstSlope = new[]{1,1};
             var secondSlope = new[]{3,1};
