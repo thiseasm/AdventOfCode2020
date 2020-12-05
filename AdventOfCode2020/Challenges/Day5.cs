@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AdventOfCode2020.Challenges
 {
@@ -12,16 +12,36 @@ namespace AdventOfCode2020.Challenges
         {
             _inputs = ReadFile("Day5.txt");
         }
+
+        [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
             var highestSeatId = GetHighestSeatId(_inputs);
+            var ownSeatId = GetOwnSeatId(_inputs);
 
             Console.WriteLine($"The highest seat ID is: {highestSeatId}");
+            Console.WriteLine($"The own seat ID is: {ownSeatId}");
         }
 
-        private int GetHighestSeatId(IEnumerable<string> inputs)
+        private static int GetOwnSeatId(IEnumerable<string> inputs)
         {
-            var highestId = 0;
+            var seatIds = CalculateAllSeatIds(inputs);
+            for (var index = 1; index < seatIds.Count; index++)
+            {
+                var previousSeatId = seatIds[index-1];
+                var thisSeat = seatIds[index];
+                if (thisSeat - previousSeatId == 2)
+                {
+                    return thisSeat - 1;
+                }
+            }
+
+            return 0;
+        }
+
+        private static List<int> CalculateAllSeatIds(IEnumerable<string> inputs)
+        {
+            var seatIds = new List<int>();
             foreach (var boardingPass in inputs)
             {
                 var rowPosition = boardingPass.Substring(0, 7);
@@ -31,55 +51,59 @@ namespace AdventOfCode2020.Challenges
                 var columnNumber = GetColumnNumber(columnPosition);
                 var seatId = rowNumber * 8 + columnNumber;
 
-                if (seatId > highestId)
-                {
-                    highestId = seatId;
-                }
+                seatIds.Add(seatId);
             }
 
-            return highestId;
+            seatIds.Sort();
+            return seatIds;
+        }
+
+        private static int GetHighestSeatId(IEnumerable<string> inputs)
+        {
+            var seatIds = CalculateAllSeatIds(inputs);
+            return seatIds[^1];
         }
 
         private static int GetRowNumber(string rowPosition)
         {
-            var seatNumbers = new List<int>();
-            for (var index = 0; index < 128; index++)
-            {
-                seatNumbers.Add(index);
-            }
-
-            foreach (var character in rowPosition)
-            {
-                seatNumbers = character switch
-                {
-                    'F' => seatNumbers.GetRange(0, seatNumbers.Count / 2),
-                    'B' => seatNumbers.GetRange(seatNumbers.Count / 2, seatNumbers.Count / 2),
-                    _ => throw new IndexOutOfRangeException()
-                };
-            }
-
-            return seatNumbers[0];
-        }
-
-        private static int GetColumnNumber(string columnPosition)
-        {
             var rowNumber = new List<int>();
-            for (var index = 0; index < 8; index++)
+            for (var index = 0; index < 128; index++)
             {
                 rowNumber.Add(index);
             }
 
-            foreach (var character in columnPosition)
+            foreach (var character in rowPosition)
             {
                 rowNumber = character switch
                 {
-                    'L' => rowNumber.GetRange(0, rowNumber.Count / 2),
-                    'R' => rowNumber.GetRange(rowNumber.Count / 2, rowNumber.Count / 2),
+                    'F' => rowNumber.GetRange(0, rowNumber.Count / 2),
+                    'B' => rowNumber.GetRange(rowNumber.Count / 2, rowNumber.Count / 2),
                     _ => throw new IndexOutOfRangeException()
                 };
             }
 
             return rowNumber[0];
+        }
+
+        private static int GetColumnNumber(string columnPosition)
+        {
+            var columnNumber = new List<int>();
+            for (var index = 0; index < 8; index++)
+            {
+                columnNumber.Add(index);
+            }
+
+            foreach (var character in columnPosition)
+            {
+                columnNumber = character switch
+                {
+                    'L' => columnNumber.GetRange(0, columnNumber.Count / 2),
+                    'R' => columnNumber.GetRange(columnNumber.Count / 2, columnNumber.Count / 2),
+                    _ => throw new IndexOutOfRangeException()
+                };
+            }
+
+            return columnNumber[0];
         }
 
         
