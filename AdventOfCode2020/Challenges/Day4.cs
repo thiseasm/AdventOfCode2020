@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -23,19 +22,19 @@ namespace AdventOfCode2020.Challenges
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
-            var validPassports = CheckPassportsValidity(_inputs,CheckPassportValidity);
-            var validPassportsWithComplexMethod = CheckPassportsValidity(_inputs,CheckAdvancedValidity);
+            var validPassports = CheckPassportsValidity(CheckPassportValidity);
+            var validPassportsWithComplexMethod = CheckPassportsValidity(CheckAdvancedValidity);
 
             Console.WriteLine($"The number of passwords containing all fields present is: {validPassports}");
             Console.WriteLine($"The number of valid passwords present is: {validPassportsWithComplexMethod}");
         }
 
-        private static int CheckPassportsValidity(IEnumerable<string> inputs, Func<string,bool> passportValidator)
+        private int CheckPassportsValidity(Func<string,bool> passportValidator)
         {
             var validPassportCount = 0;
             var passportToCheck = string.Empty;
 
-            foreach (var line in inputs)
+            foreach (var line in _inputs)
             {
                 if (line.Equals(string.Empty))
                 {

@@ -16,29 +16,29 @@ namespace AdventOfCode2020.Challenges
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
-            var firstProduct = ExecuteFirstPart(_inputs);
-            var secondProduct = ExecuteSecondPart(_inputs);
+            var firstProduct = ExecuteFirstPart();
+            var secondProduct = ExecuteSecondPart();
 
             Console.WriteLine($"The product of the two numbers is: {firstProduct}");
             Console.WriteLine($"The product of the three numbers is: {secondProduct}");
         }
 
-        private static int ExecuteSecondPart(IReadOnlyList<int> inputs)
+        private int ExecuteSecondPart()
         {
             var numbersFound = false;
             var firstNumber = 0;
             var secondNumber = 0;
             var thirdNumber = 0;
 
-            for (var index = 0; index < inputs.Count - 2; index++)
+            for (var index = 0; index < _inputs.Length - 2; index++)
             {
-                firstNumber = inputs[index];
-                for (var secondIndex = index + 1; secondIndex < inputs.Count - 1; secondIndex++)
+                firstNumber = _inputs[index];
+                for (var secondIndex = index + 1; secondIndex < _inputs.Length - 1; secondIndex++)
                 {
-                    secondNumber = inputs[secondIndex];
-                    for (var remainingIndex = secondIndex + 1; remainingIndex < inputs.Count; remainingIndex++)
+                    secondNumber = _inputs[secondIndex];
+                    for (var remainingIndex = secondIndex + 1; remainingIndex < _inputs.Length; remainingIndex++)
                     {
-                        thirdNumber = inputs[remainingIndex];
+                        thirdNumber = _inputs[remainingIndex];
                         if (firstNumber + secondNumber + thirdNumber != 2020) continue;
 
                         numbersFound = true;
@@ -55,18 +55,18 @@ namespace AdventOfCode2020.Challenges
             return firstNumber * secondNumber * thirdNumber;
         }
 
-        private static int ExecuteFirstPart(IReadOnlyList<int> inputs)
+        private int ExecuteFirstPart()
         {
             var numbersFound = false;
             var firstNumber = 0;
             var secondNumber = 0;
 
-            for (var index = 0; index < inputs.Count; index++)
+            for (var index = 0; index < _inputs.Length; index++)
             {
-                firstNumber = inputs[index];
-                for (var remainingIndex = index + 1; remainingIndex < inputs.Count; remainingIndex++)
+                firstNumber = _inputs[index];
+                for (var remainingIndex = index + 1; remainingIndex < _inputs.Length; remainingIndex++)
                 {
-                    secondNumber = inputs[remainingIndex];
+                    secondNumber = _inputs[remainingIndex];
                     if (firstNumber + secondNumber != 2020) continue;
 
                     numbersFound = true;

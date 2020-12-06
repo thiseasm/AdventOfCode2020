@@ -17,22 +17,22 @@ namespace AdventOfCode2020.Challenges
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
-            var treesEncountered = CalculateTreesInPath(_inputs);
-            var treesOnCombinedSlopes = CalculateTreesInCombinedSlopes(_inputs);
+            var treesEncountered = CalculateTreesInPath();
+            var treesOnCombinedSlopes = CalculateTreesInCombinedSlopes();
 
             Console.WriteLine($"The sum of all trees encountered is:{treesEncountered}");
             Console.WriteLine($"The product of all trees in slopes is:{treesOnCombinedSlopes}");
         }
 
-        private static int CalculateTreesInPath(IEnumerable<string> inputs)
+        private int CalculateTreesInPath()
         {
             const int horizontalSpeed = 3;
             const int verticalSpeed = 1;
 
-            return CalculateTreesInPath(inputs, horizontalSpeed, verticalSpeed);
+            return CalculateTreesInPath(horizontalSpeed, verticalSpeed);
         }
 
-        private static long CalculateTreesInCombinedSlopes(string[] inputs)
+        private long CalculateTreesInCombinedSlopes()
         {
             var firstSlope = new[]{1,1};
             var secondSlope = new[]{3,1};
@@ -45,16 +45,16 @@ namespace AdventOfCode2020.Challenges
 
             foreach (var speedPair in slopeSpeeds)
             {
-                var treesInSlope = CalculateTreesInPath(inputs, speedPair[0], speedPair[1]);
+                var treesInSlope = CalculateTreesInPath(speedPair[0], speedPair[1]);
                 productOfAllTreesEncountered *= treesInSlope;
             }
 
             return productOfAllTreesEncountered;
         }
 
-        private static int CalculateTreesInPath(IEnumerable<string> inputs, int horizontalSpeed, int verticalSpeed)
+        private int CalculateTreesInPath(int horizontalSpeed, int verticalSpeed)
         {
-            var formattedMap = inputs.Select(row => row.ToCharArray()).ToArray();
+            var formattedMap = _inputs.Select(row => row.ToCharArray()).ToArray();
 
             var treesEncountered = 0;
             var xPosition = 0;

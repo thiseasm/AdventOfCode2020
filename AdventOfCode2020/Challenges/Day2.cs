@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -17,17 +16,17 @@ namespace AdventOfCode2020.Challenges
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
-            var validPasswordsCount = ExecuteFirstPart(_inputs);
-            var validPasswordsUsingSecondRule = ExecuteSecondPart(_inputs);
+            var validPasswordsCount = ExecuteFirstPart();
+            var validPasswordsUsingSecondRule = ExecuteSecondPart();
 
             Console.WriteLine($"Valid Passwords: {validPasswordsCount}");
             Console.WriteLine($"Valid Passwords using Second Rule: {validPasswordsUsingSecondRule}");
         }
 
-        private static int ExecuteSecondPart(IEnumerable<string> inputs)
+        private int ExecuteSecondPart()
         {
             var validPasswordsFound = 0;
-            foreach (var compositePassword in inputs)
+            foreach (var compositePassword in _inputs)
             {
                 var ruleAndPassword = compositePassword.Split(": ");
 
@@ -49,10 +48,10 @@ namespace AdventOfCode2020.Challenges
             return validPasswordsFound;
         }
 
-        private static int ExecuteFirstPart(IEnumerable<string> inputs)
+        private int ExecuteFirstPart()
         {
             var validPasswordsFound = 0;
-            foreach (var compositePassword in inputs)
+            foreach (var compositePassword in _inputs)
             {
                 var ruleAndPassword = compositePassword.Split(": ");
 

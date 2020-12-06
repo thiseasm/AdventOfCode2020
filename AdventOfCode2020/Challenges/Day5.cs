@@ -16,16 +16,16 @@ namespace AdventOfCode2020.Challenges
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
-            var highestSeatId = GetHighestSeatId(_inputs);
-            var ownSeatId = GetOwnSeatId(_inputs);
+            var highestSeatId = GetHighestSeatId();
+            var ownSeatId = GetOwnSeatId();
 
             Console.WriteLine($"The highest seat ID is: {highestSeatId}");
             Console.WriteLine($"The own seat ID is: {ownSeatId}");
         }
 
-        private static int GetOwnSeatId(IEnumerable<string> inputs)
+        private int GetOwnSeatId()
         {
-            var seatIds = CalculateAllSeatIds(inputs);
+            var seatIds = CalculateAllSeatIds();
             for (var index = 1; index < seatIds.Count; index++)
             {
                 var previousSeatId = seatIds[index-1];
@@ -39,10 +39,10 @@ namespace AdventOfCode2020.Challenges
             return 0;
         }
 
-        private static List<int> CalculateAllSeatIds(IEnumerable<string> inputs)
+        private List<int> CalculateAllSeatIds()
         {
             var seatIds = new List<int>();
-            foreach (var boardingPass in inputs)
+            foreach (var boardingPass in _inputs)
             {
                 var rowPosition = boardingPass.Substring(0, 7);
                 var columnPosition = boardingPass.Substring(7);
@@ -58,9 +58,9 @@ namespace AdventOfCode2020.Challenges
             return seatIds;
         }
 
-        private static int GetHighestSeatId(IEnumerable<string> inputs)
+        private int GetHighestSeatId()
         {
-            var seatIds = CalculateAllSeatIds(inputs);
+            var seatIds = CalculateAllSeatIds();
             return seatIds[^1];
         }
 
