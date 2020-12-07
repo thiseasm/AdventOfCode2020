@@ -21,14 +21,36 @@ namespace AdventOfCode2020.Challenges
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
-            var bagsThatCanContainShinyGold = ProcessLuggageRules();
+            var bagsThatCanContainShinyGold = GetEligibleContainers(_bagColor);
+            var bagsThatNeedToBeContainedInShinyGold = GetRequiredContainedBagCount(_bagColor);
 
             Console.WriteLine($"The number of bags that can contain a Shiny Gold bag is: {bagsThatCanContainShinyGold}");
+            Console.WriteLine($"The number of bags that need to be contained in a Shiny Gold bag is: {bagsThatNeedToBeContainedInShinyGold}");
         }
 
-        private int ProcessLuggageRules()
+        private int GetRequiredContainedBagCount(string bagColor)
         {
-            return GetEligibleContainers(_bagColor);
+            var containerInfo = _inputs.First(i => i.StartsWith(bagColor));
+            var eligibleContainerCount = 0;
+
+            if (containerInfo == null || containerInfo.Contains("no other bags"))
+            {
+                return eligibleContainerCount;
+            }
+
+            var indexOfContainedBags = containerInfo.IndexOf("contain", StringComparison.Ordinal) + 7;
+            var containerQuantities = containerInfo.Substring(indexOfContainedBags)
+                                                    .Replace('.', ' ').Replace("bags",string.Empty)
+                                                    .Split(',').Select(i => i.Trim()).ToList();
+
+            var containerInfoExtended = containerQuantities.ToDictionary(q => q.Substring(1).Trim(), q => int.Parse(q[0].ToString()));
+
+            foreach (var color in containerInfoExtended.Keys)
+            {
+                eligibleContainerCount += containerInfoExtended[color]*(GetRequiredContainedBagCount(color) + 1);
+            }
+
+            return eligibleContainerCount;
         }
 
         private int GetEligibleContainers(string bagColor)
