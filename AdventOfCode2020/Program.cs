@@ -19,7 +19,7 @@ namespace AdventOfCode2020
         }
         private static Day CalculateDay()
         {
-            const int date = 7;
+            const int date = 8;
             return date switch
             {
                 1 => (Day) new Day1(),
@@ -29,6 +29,7 @@ namespace AdventOfCode2020
                 5 => (Day) new Day5(),
                 6 => (Day) new Day6(),
                 7 => (Day) new Day7(),
+                8 => (Day) new Day8(),
                 _ => new Day1()
             };
         }
