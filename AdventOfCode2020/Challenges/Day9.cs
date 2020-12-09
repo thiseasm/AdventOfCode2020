@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace AdventOfCode2020.Challenges
@@ -11,11 +12,52 @@ namespace AdventOfCode2020.Challenges
         {
             _inputs = ReadLongFile("Day9.txt");
         }
+
+        [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
             var numberThatDefiesPreamble = CheckXmasPreambles();
+            var sumOfUpperAndLowerLimits = GetSumOfLimits(numberThatDefiesPreamble);
 
-            Console.WriteLine(numberThatDefiesPreamble);
+            Console.WriteLine($"The number that defies the preamble is: {numberThatDefiesPreamble}");
+            Console.WriteLine($"The sum of the lowest and highest number is : {sumOfUpperAndLowerLimits}");
+        }
+
+        private long GetSumOfLimits(long numberThatDefiesPreamble)
+        {
+            long sumOfLimits = 0;
+            var groupFound = false;
+
+            for (var counter = 0; _inputs[counter] < numberThatDefiesPreamble; counter++)
+            {
+                var targetNumbers = new long[25];
+                Array.Copy(_inputs,counter,targetNumbers,0,25);
+
+                for (var size = 2; size < 25; size++)
+                {
+                    for (var index = 0; index < 25 - size; index++)
+                    {
+                        var groupToCheck = new long[size];
+                        Array.Copy(targetNumbers,index,groupToCheck,0,size);
+
+                        if (groupToCheck.Sum() != numberThatDefiesPreamble)
+                            continue;
+
+                        Array.Sort(groupToCheck);
+                        sumOfLimits = groupToCheck[0] + groupToCheck[^1];
+                        groupFound = true;
+                        break;
+                    }
+
+                    if (groupFound)
+                        break;
+                }
+
+                if (groupFound)
+                    break;
+            }
+
+            return sumOfLimits;
         }
 
         private long CheckXmasPreambles()
