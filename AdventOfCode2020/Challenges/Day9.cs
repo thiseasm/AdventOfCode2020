@@ -6,7 +6,7 @@ namespace AdventOfCode2020.Challenges
 {
     public class Day9 : Day
     {
-        public readonly long[] _inputs;
+        private readonly long[] _inputs;
 
         public Day9()
         {
