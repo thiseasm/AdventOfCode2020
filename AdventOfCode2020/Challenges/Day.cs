@@ -20,6 +20,14 @@ namespace AdventOfCode2020.Challenges
             return inputsRaw.Select(input => int.Parse(input.Trim())).ToArray();
         }
 
+        protected long[] ReadLongFile(string file)
+        {
+            var inputPath = Path.Combine(Properties.Resources.InputsFolder, file);
+            var inputsRaw = File.ReadAllLines(inputPath);
+
+            return inputsRaw.Select(input => long.Parse(input.Trim())).ToArray();
+        }
+
         protected int[] ReadCsv(string file)
         {
             return ReadSv(file, ',');
