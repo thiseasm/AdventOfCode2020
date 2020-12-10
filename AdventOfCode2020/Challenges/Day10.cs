@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace AdventOfCode2020.Challenges
 {
@@ -11,23 +14,41 @@ namespace AdventOfCode2020.Challenges
             _inputs = ReadIntegerFile("Day10.txt");
         }
 
+        [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
             var joltageProduct = CalculateJoltageProduct();
+            var adapterCombinations = CalculateAvailableCombinations();
 
-            Console.WriteLine(joltageProduct);
+            Console.WriteLine($"The product of all adapters is: {joltageProduct}");
+            Console.WriteLine($"The available combinations of adapters is: {adapterCombinations}");
+        }
+
+        private long CalculateAvailableCombinations()
+        {
+            var joltRatings = GetJoltRatingsIncludingEndpoints();
+            var combinationsPerAdapter = new long[joltRatings.Length];
+            combinationsPerAdapter[0] = 1;
+
+            for (var index = 1; index < combinationsPerAdapter.Length; index++)
+            {
+                for (var targetIndex = 0; targetIndex < index; targetIndex++)
+                {
+                    if (joltRatings[index] - joltRatings[targetIndex] <= 3)
+                    {
+                        combinationsPerAdapter[index] += combinationsPerAdapter[targetIndex];
+                    }
+                }
+            }
+
+            return combinationsPerAdapter[^1];
+
         }
 
         private int CalculateJoltageProduct()
         {
-            var ratings = new int[_inputs.Length + 2];
             Array.Sort(_inputs);
-            Array.Copy(_inputs,0,ratings,1,_inputs.Length );
-
-            //Include device ratings
-            ratings[^1] = ratings[^2] + 3;
-
-            Array.Sort(ratings);
+            var ratings = GetJoltRatingsIncludingEndpoints();
 
             var oneJoltDifferences = 0;
             var threeJoltDifferences = 0;
@@ -41,6 +62,18 @@ namespace AdventOfCode2020.Challenges
             }
 
             return oneJoltDifferences * threeJoltDifferences;
+        }
+
+        private int[] GetJoltRatingsIncludingEndpoints()
+        {
+            var ratings = new int[_inputs.Length + 2];
+            Array.Copy(_inputs, 0, ratings, 1, _inputs.Length);
+
+            //Include device ratings
+            ratings[^1] = ratings[^2] + 3;
+
+            Array.Sort(ratings);
+            return ratings;
         }
     }
 }
