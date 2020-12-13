@@ -18,19 +18,15 @@ namespace AdventOfCode2020.Challenges
         public override void Start()
         {
             var occupiedSeats = ModelLayoutChanges();
+            var occupiedSeatsForSecondPart = ModelLayoutChangesAdvanced();
 
             Console.WriteLine($"The number of occupied seats after modeling is: {occupiedSeats}");
+            Console.WriteLine($"The number of occupied seats after the second modeling is: {occupiedSeatsForSecondPart}");
         }
 
-        private int ModelLayoutChanges()
+        private int ModelLayoutChangesAdvanced()
         {
-            var seatingPlanBefore = new char[_inputs.Length][];
-            for (var index = 0; index < _inputs.Length; index++)
-            {
-                var targetArray = _inputs[index].ToCharArray();
-                seatingPlanBefore[index] = new char[targetArray.Length];
-                Array.Copy(targetArray,seatingPlanBefore[index],targetArray.Length);
-            }
+            var seatingPlanBefore = GenerateSeatingPlanFromInputs();
 
             var occupiedSeats = 0;
             var changeOccurred = true;
@@ -51,7 +47,7 @@ namespace AdventOfCode2020.Challenges
                             continue;
                         }
 
-                        var adjacentSeats = GetAdjacentSeats(seatingPlanBefore, horizontalIndex, verticalIndex);
+                        var adjacentSeats = GetAdjacentSeatsInRange(seatingPlanBefore, horizontalIndex, verticalIndex);
 
                         if(seatingPlanBefore[horizontalIndex][verticalIndex].Equals('L'))
                         {
@@ -63,7 +59,7 @@ namespace AdventOfCode2020.Challenges
                         }
                         else
                         {
-                            if (adjacentSeats.Count(s => s.Equals('#')) >= 4)
+                            if (adjacentSeats.Count(s => s.Equals('#')) >= 5)
                             {
                                 seatingPlanAfter[horizontalIndex][verticalIndex] = 'L';
                                 changeOccurred = true;
@@ -83,6 +79,80 @@ namespace AdventOfCode2020.Challenges
             return occupiedSeats;
         }
 
+        private int ModelLayoutChanges()
+        {
+            var seatingPlanBefore = GenerateSeatingPlanFromInputs();
+
+            var occupiedSeats = 0;
+            var changeOccurred = true;
+            while (changeOccurred)
+            {
+                var seatingPlanAfter = new char[seatingPlanBefore.Length][];
+                DeepCopyArray(seatingPlanBefore, seatingPlanAfter);
+
+                occupiedSeats = 0;
+                changeOccurred = ModelSeatChanges(seatingPlanBefore, seatingPlanAfter,4, ref occupiedSeats);
+
+                DeepCopyArray(seatingPlanAfter,seatingPlanBefore);
+            }
+
+            return occupiedSeats;
+        }
+
+        private static bool ModelSeatChanges(IReadOnlyList<char[]> seatingPlanBefore, IReadOnlyList<char[]> seatingPlanAfter,int occupiedSeatTolerance, ref int occupiedSeats)
+        {
+            var changeOccurred = false;
+
+            for (var horizontalIndex = 0; horizontalIndex < seatingPlanBefore.Count; horizontalIndex++)
+            {
+                for (var verticalIndex = 0; verticalIndex < seatingPlanBefore[horizontalIndex].Length; verticalIndex++)
+                {
+                    if (seatingPlanBefore[horizontalIndex][verticalIndex].Equals('.'))
+                    {
+                        continue;
+                    }
+
+                    var adjacentSeats = GetAdjacentSeats(seatingPlanBefore, horizontalIndex, verticalIndex);
+
+                    if (seatingPlanBefore[horizontalIndex][verticalIndex].Equals('L'))
+                    {
+                        if (adjacentSeats.All(s => !s.Equals('#')))
+                        {
+                            seatingPlanAfter[horizontalIndex][verticalIndex] = '#';
+                            changeOccurred = true;
+                        }
+                    }
+                    else
+                    {
+                        if (adjacentSeats.Count(s => s.Equals('#')) >= occupiedSeatTolerance)
+                        {
+                            seatingPlanAfter[horizontalIndex][verticalIndex] = 'L';
+                            changeOccurred = true;
+                        }
+                        else
+                        {
+                            occupiedSeats++;
+                        }
+                    }
+                }
+            }
+
+            return changeOccurred;
+        }
+
+        private char[][] GenerateSeatingPlanFromInputs()
+        {
+            var seatingPlanBefore = new char[_inputs.Length][];
+            for (var index = 0; index < _inputs.Length; index++)
+            {
+                var targetArray = _inputs[index].ToCharArray();
+                seatingPlanBefore[index] = new char[targetArray.Length];
+                Array.Copy(targetArray, seatingPlanBefore[index], targetArray.Length);
+            }
+
+            return seatingPlanBefore;
+        }
+
         private static void DeepCopyArray(IReadOnlyList<char[]> source, IList<char[]> destination)
         {
             for (var index = 0; index < source.Count; index++)
@@ -91,6 +161,204 @@ namespace AdventOfCode2020.Challenges
                 destination[index] = new char[targetArray.Length];
                 Array.Copy(targetArray, destination[index], targetArray.Length);
             }
+        }
+
+        private static IEnumerable<char> GetAdjacentSeatsInRange(IReadOnlyList<char[]> seatingPlan, in int horizontalIndex, in int verticalIndex)
+        {
+            var adjacentSeats = new List<char>();
+
+            var hasRowBefore = HasRowBefore(horizontalIndex);
+            var hasRowAfter = HasRowAfter(seatingPlan, horizontalIndex);
+            var hasColumnBefore = HasColumnBefore(verticalIndex);
+            var hasColumnAfter = HasColumnAfter(seatingPlan[horizontalIndex], verticalIndex);
+            
+
+            if(hasRowBefore)
+            {
+                var horizontal = horizontalIndex;
+                var seatFound = false;
+                while(!seatFound)
+                {
+                    var seat = seatingPlan[horizontal - 1][verticalIndex];
+                    if (seat.Equals('.'))
+                    {
+                        horizontal -= 1;
+                        if (!HasRowBefore(horizontal))
+                            break;
+                    }
+                    else
+                    {
+                        adjacentSeats.Add(seat);
+                        seatFound = true;
+                    }
+
+                }
+            }
+
+            if (hasColumnBefore)
+            {
+                var vertical = verticalIndex;
+                var seatFound = false;
+                while(!seatFound)
+                {
+                    var seat = seatingPlan[horizontalIndex][vertical - 1];
+                    if (seat.Equals('.'))
+                    {
+                        vertical -= 1;
+                        if (!HasColumnBefore(vertical))
+                            break;
+                    }
+                    else
+                    {
+                        adjacentSeats.Add(seat);
+                        seatFound = true;
+                    }
+
+                }
+            }
+
+            if(hasRowAfter)
+            {
+                var horizontal = horizontalIndex;
+                var seatFound = false;
+                while(!seatFound)
+                {
+                    var seat = seatingPlan[horizontal + 1][verticalIndex];
+                    if (seat.Equals('.'))
+                    {
+                        horizontal += 1;
+                        if (!HasRowAfter(seatingPlan,horizontal))
+                            break;
+                    }
+                    else
+                    {
+                        adjacentSeats.Add(seat);
+                        seatFound = true;
+                    }
+
+                }
+            }
+
+            if(hasColumnAfter)
+            {
+                var vertical = verticalIndex;
+                var seatFound = false;
+                while(!seatFound)
+                {
+                    var seat = seatingPlan[horizontalIndex][vertical + 1];
+                    if (seat.Equals('.'))
+                    {
+                        vertical += 1;
+                        if (!HasColumnAfter(seatingPlan[horizontalIndex],vertical))
+                            break;
+                    }
+                    else
+                    {
+                        adjacentSeats.Add(seat);
+                        seatFound = true;
+                    }
+
+                }
+            }
+
+            if(hasRowBefore && hasColumnBefore)
+            {
+                var horizontal = horizontalIndex;
+                var vertical = verticalIndex;
+                var seatFound = false;
+                while(!seatFound)
+                {
+                    var seat = seatingPlan[horizontal - 1][vertical - 1];
+                    if (seat.Equals('.'))
+                    {
+                        horizontal -= 1;
+                        vertical -= 1;
+                        if (!(HasRowBefore(horizontal) && HasColumnBefore(vertical)))
+                            break;
+                    }
+                    else
+                    {
+                        adjacentSeats.Add(seat);
+                        seatFound = true;
+                    }
+
+                }
+            }
+
+            if(hasRowAfter && hasColumnBefore)
+            {
+                var horizontal = horizontalIndex;
+                var vertical = verticalIndex;
+                var seatFound = false;
+                while(!seatFound)
+                {
+                    var seat = seatingPlan[horizontal + 1][vertical - 1];
+                    if (seat.Equals('.'))
+                    {
+                        horizontal += 1;
+                        vertical -= 1;
+                        if (!(HasRowAfter(seatingPlan,horizontal) && HasColumnBefore(vertical)))
+                            break;
+                    }
+                    else
+                    {
+                        adjacentSeats.Add(seat);
+                        seatFound = true;
+                    }
+
+                }
+            }
+
+            if(hasRowBefore && hasColumnAfter)
+            {
+                var horizontal = horizontalIndex;
+                var vertical = verticalIndex;
+                var seatFound = false;
+                while(!seatFound)
+                {
+                    var seat = seatingPlan[horizontal - 1][vertical + 1];
+                    if (seat.Equals('.'))
+                    {
+                        horizontal -= 1;
+                        vertical += 1;
+                        if (!(HasRowBefore(horizontal) && HasColumnAfter(seatingPlan[horizontal],vertical)))
+                            break;
+                    }
+                    else
+                    {
+                        adjacentSeats.Add(seat);
+                        seatFound = true;
+                    }
+
+                }
+            }           
+
+            if(hasRowAfter && hasColumnAfter)
+            {
+                var horizontal = horizontalIndex;
+                var vertical = verticalIndex;
+                var seatFound = false;
+                while(!seatFound)
+                {
+                    var seat = seatingPlan[horizontal + 1][vertical + 1];
+                    if (seat.Equals('.'))
+                    {
+                        horizontal += 1;
+                        vertical += 1;
+                        if (!(HasRowAfter(seatingPlan,horizontal) && HasColumnAfter(seatingPlan[horizontal],vertical)))
+                            break;
+                    }
+                    else
+                    {
+                        adjacentSeats.Add(seat);
+                        seatFound = true;
+                    }
+
+                }
+
+            }
+
+            return adjacentSeats;
         }
 
         private static IEnumerable<char> GetAdjacentSeats(IReadOnlyList<char[]> seatingPlan,int horizontalIndex, int verticalIndex)
