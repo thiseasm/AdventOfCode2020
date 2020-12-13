@@ -17,81 +17,27 @@ namespace AdventOfCode2020.Challenges
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public override void Start()
         {
-            var occupiedSeats = ModelLayoutChanges();
-            var occupiedSeatsForSecondPart = ModelLayoutChangesAdvanced();
-
+            var occupiedSeats = ModelLayoutChanges(false);
+            var occupiedSeatsForSecondPart = ModelLayoutChanges(true);
+            
             Console.WriteLine($"The number of occupied seats after modeling is: {occupiedSeats}");
             Console.WriteLine($"The number of occupied seats after the second modeling is: {occupiedSeatsForSecondPart}");
         }
 
-        private int ModelLayoutChangesAdvanced()
+        private int ModelLayoutChanges(bool executeAdvancedLogic)
         {
             var seatingPlanBefore = GenerateSeatingPlanFromInputs();
 
             var occupiedSeats = 0;
             var changeOccurred = true;
+            var seatTolerance = executeAdvancedLogic ? 5 : 4;
             while (changeOccurred)
             {
                 var seatingPlanAfter = new char[seatingPlanBefore.Length][];
                 DeepCopyArray(seatingPlanBefore, seatingPlanAfter);
 
                 occupiedSeats = 0;
-                changeOccurred = false;
-
-                for (var horizontalIndex = 0; horizontalIndex < seatingPlanBefore.Length; horizontalIndex++)
-                {
-                    for (var verticalIndex = 0; verticalIndex < seatingPlanBefore[horizontalIndex].Length; verticalIndex++)
-                    {
-                        if (seatingPlanBefore[horizontalIndex][verticalIndex].Equals('.'))
-                        {
-                            continue;
-                        }
-
-                        var adjacentSeats = GetAdjacentSeatsInRange(seatingPlanBefore, horizontalIndex, verticalIndex);
-
-                        if(seatingPlanBefore[horizontalIndex][verticalIndex].Equals('L'))
-                        {
-                            if (adjacentSeats.All(s => !s.Equals('#')))
-                            {
-                                seatingPlanAfter[horizontalIndex][verticalIndex] = '#';
-                                changeOccurred = true;
-                            }
-                        }
-                        else
-                        {
-                            if (adjacentSeats.Count(s => s.Equals('#')) >= 5)
-                            {
-                                seatingPlanAfter[horizontalIndex][verticalIndex] = 'L';
-                                changeOccurred = true;
-                            }
-                            else
-                            {
-                                occupiedSeats++;
-                            }
-                        }
-
-                    }
-                }
-
-                DeepCopyArray(seatingPlanAfter,seatingPlanBefore);
-            }
-
-            return occupiedSeats;
-        }
-
-        private int ModelLayoutChanges()
-        {
-            var seatingPlanBefore = GenerateSeatingPlanFromInputs();
-
-            var occupiedSeats = 0;
-            var changeOccurred = true;
-            while (changeOccurred)
-            {
-                var seatingPlanAfter = new char[seatingPlanBefore.Length][];
-                DeepCopyArray(seatingPlanBefore, seatingPlanAfter);
-
-                occupiedSeats = 0;
-                changeOccurred = ModelSeatChanges(seatingPlanBefore, seatingPlanAfter,4, ref occupiedSeats);
+                changeOccurred = ModelSeatChanges(seatingPlanBefore, seatingPlanAfter,seatTolerance, ref occupiedSeats);
 
                 DeepCopyArray(seatingPlanAfter,seatingPlanBefore);
             }
@@ -112,7 +58,9 @@ namespace AdventOfCode2020.Challenges
                         continue;
                     }
 
-                    var adjacentSeats = GetAdjacentSeats(seatingPlanBefore, horizontalIndex, verticalIndex);
+                    var adjacentSeats = occupiedSeatTolerance == 4 
+                        ? GetAdjacentSeats(seatingPlanBefore, horizontalIndex, verticalIndex) 
+                        : GetAdjacentSeatsInRange(seatingPlanBefore,horizontalIndex,verticalIndex);
 
                     if (seatingPlanBefore[horizontalIndex][verticalIndex].Equals('L'))
                     {
